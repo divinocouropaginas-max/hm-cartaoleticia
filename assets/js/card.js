@@ -53,7 +53,7 @@
     <section class="capa rv zoom" aria-label="${esc(p.name)}">
       <img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}" fetchpriority="high">
       <div class="topo gutter">
-        <span class="marca"><span class="logo"><img src="${esc(p.logo)}" alt=""></span><span class="rotulo">${esc(p.company)}</span></span>
+        <span class="marca"><img class="mono" src="${esc(p.logoMono)}" alt="Divino Couro"></span>
         <button class="icon-btn" type="button" data-share aria-label="Compartilhar cartão">${icon("share")}</button>
       </div>
       <span class="status rotulo"><span class="dot"></span>${esc(p.status)}</span>
@@ -121,10 +121,11 @@
     </section>
 
     <footer class="gutter rv">
+      <img class="foot-logo" src="${esc(p.logo)}" alt="Divino Couro" loading="lazy">
       <span class="assin">${esc(p.signature)}</span>
       <span class="rotulo">${esc(p.name)} · ${esc(p.company)}</span>
       <div class="foot-row"><span>© ${new Date().getFullYear()} ${esc(p.company)}</span><button type="button" data-replay>Rever abertura</button></div>
-      <a class="credit" href="${esc(company.site)}" target="_blank" rel="noopener">Cartão feito por HM Digital</a>
+      <a class="credit" href="${esc(company.site)}" target="_blank" rel="noopener">Cartão feito por ${company.logo ? `<img src="${esc(company.logo)}" alt="" onerror="this.remove()">` : ""}<span>HM Digital</span></a>
     </footer>`;
 
   document.documentElement.classList.add("rv-on");
