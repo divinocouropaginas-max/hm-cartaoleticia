@@ -1,10 +1,11 @@
-// Monta o cartão da Letícia a partir de assets/js/perfil.js (padrão dos cartões HM).
+// Monta o cartão da Letícia a partir de assets/js/perfil.js.
+// Layout editorial (modelo "Luana Souza") com os botões no padrão HM logo abaixo da foto.
 (function () {
   const p = window.HM_PROFILE;
   const intents = window.HM_INTENTS || [];
   const fotos = window.HM_PORTFOLIO || [];
   const company = window.HM_COMPANY;
-  const first = p.name.split(" ")[0];
+  const [first, ...resto] = p.name.split(" ");
 
   const icons = {
     share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>',
@@ -17,10 +18,7 @@
     download: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
     arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
     left: '<path d="M15 6l-6 6 6 6"/>',
-    right: '<path d="M9 6l6 6-6 6"/>',
-    chat: '<path d="M4 5h16v11H8l-4 4V5z"/>',
-    box: '<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9"/>',
-    star: '<path d="m12 3 2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6-4.5-4.1 6-.7L12 3z"/>'
+    right: '<path d="M9 6l6 6-6 6"/>'
   };
   const icon = (n, cls = "i") => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${icons[n] || icons.arrow}</svg>`;
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -41,25 +39,38 @@
     `<button type="button" data-share>${icon("share")}Compartilhar</button>`
   ].join("");
 
-  const html = `
-    <header class="top rv">
-      <span class="brand"><span class="logo"><img src="${esc(p.logo)}" alt=""></span><span>${esc(p.name)}<small>${esc(p.company)}</small></span></span>
-      <button class="icon-btn" type="button" data-share aria-label="Compartilhar cartão">${icon("share")}</button>
-    </header>
+  // aba do envelope com o fecho de cordão
+  const aba = `<svg viewBox="0 0 400 74" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 0 L200 64 L400 0" fill="none" stroke="rgba(59,51,44,.22)" stroke-width="1"/>
+    </svg>`;
+  const fecho = `<svg viewBox="0 0 40 90" style="position:absolute;left:50%;top:22px;width:28px;height:64px;transform:translateX(-50%)" aria-hidden="true">
+      <circle cx="20" cy="18" r="9" fill="none" stroke="#8a7d70" stroke-width="1.4"/><circle cx="20" cy="18" r="2" fill="#8a7d70"/>
+      <circle cx="20" cy="66" r="9" fill="none" stroke="#8a7d70" stroke-width="1.4"/><circle cx="20" cy="66" r="2" fill="#8a7d70"/>
+      <path d="M20 20 C 8 34, 32 46, 20 64" fill="none" stroke="#8a7d70" stroke-width="1"/>
+    </svg>`;
 
-    <div style="display:grid;gap:14px">
-      <article class="card rv zoom" id="card">
-        <button class="foto rv" type="button" data-foto aria-label="Ver a foto inteira"><img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}" fetchpriority="high"></button>
-        <span class="chip status"><span class="dot"></span>${esc(p.status)}</span>
-        <div class="corpo">
-          <h1 class="rv" style="--d:.15s">${esc(p.name)}</h1>
-          <p class="role rv" style="--d:.25s">${esc(p.role)}</p>
-          <div class="places">${[...p.places, "Envio para todo o Brasil"].map((c, k) => `<span class="chip rv" style="--d:${.32 + k * .08}s">${esc(c)}</span>`).join("")}</div>
-          <p class="signature rv">${esc(p.signature)}</p>
-          <button class="save rv" type="button" data-vcard>${icon("download")}Salvar na agenda</button>
-        </div>
-      </article>
-      <nav class="quick rv" aria-label="Ações rápidas">${quick}</nav>
+  const html = `
+    <section class="capa rv zoom" aria-label="${esc(p.name)}">
+      <img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}" fetchpriority="high">
+      <div class="topo gutter">
+        <span class="marca"><span class="logo"><img src="${esc(p.logo)}" alt=""></span><span class="rotulo">${esc(p.company)}</span></span>
+        <button class="icon-btn" type="button" data-share aria-label="Compartilhar cartão">${icon("share")}</button>
+      </div>
+      <span class="status rotulo"><span class="dot"></span>${esc(p.status)}</span>
+      <div class="nome gutter">
+        <h1 class="rv" style="--d:.2s">${esc(first)} <em>${esc(resto.join(" "))}</em></h1>
+        <p class="cargo rotulo rv" style="--d:.35s">${esc(p.role)}</p>
+      </div>
+    </section>
+
+    <div class="faixa">
+      <div class="rv" style="--d:.05s"><span class="rotulo">Atuação</span><small>Bolsas de couro</small></div>
+      <div class="rv" style="--d:.15s"><span class="rotulo">Atendimento</span><small>${esc(p.places.map(c => c.split("/")[0]).join(" · "))}</small></div>
+      <div class="rv" style="--d:.25s"><span class="rotulo">Entrega</span><small>Todo o Brasil</small></div>
+    </div>
+
+    <nav class="contatos gutter" aria-label="Contatos">
+      <div class="quick rv">${quick}</div>
       <div class="links">
         ${link(wa(p.whatsappMsg), "whatsapp", "Fale comigo no WhatsApp", "Atendo pessoalmente", true)}
         ${link(ig(p.instagram), "instagram", "Meu Instagram", "@" + p.instagram)}
@@ -67,14 +78,18 @@
         ${link(p.catalogo, "book", "Catálogo de bolsas", "Modelos, cores e valores")}
         ${link(p.site, "globe", "Site da Divino Couro", "Compre online")}
       </div>
-    </div>
+      <button class="save rv" type="button" data-vcard>${icon("download")}Salvar na agenda</button>
+    </nav>
 
     ${fotos.length ? `
-    <section aria-labelledby="s-port">
-      <div class="sec-head"><span class="eyebrow rv">Portfólio</span><h2 class="rv" style="--d:.1s" id="s-port">Bolsas da Divino Couro, <span>em couro de verdade.</span></h2></div>
-      <div class="car rv" style="--d:.18s">
+    <section class="colecao gutter" aria-labelledby="s-col">
+      <span class="olho rotulo rv">Portfólio</span>
+      <h2 class="titulo rv" style="--d:.1s" id="s-col">Bolsas &amp;<span class="cursiva"> Coleção</span></h2>
+      <div class="car rv" style="--d:.2s">
         <div class="car-track" id="car" tabindex="0" aria-label="Bolsas, deslize para o lado">
-          ${fotos.map((f, j) => `<button class="car-item" type="button" data-open="${j}" aria-label="Ampliar foto ${j + 1} de ${fotos.length}"><img src="${esc(f.src)}" alt="${esc(f.alt)}" loading="lazy"></button>`).join("")}
+          ${fotos.map((f, j) => `<button class="car-item" type="button" data-open="${j}" aria-label="Ampliar: ${esc(f.alt)}">
+            <img src="${esc(f.src)}" alt="${esc(f.alt)}" loading="lazy">
+            <span class="leg"><span class="cursiva">${esc(f.title || "Divino Couro")}</span><small>${esc(f.sub || "")}</small></span></button>`).join("")}
         </div>
         <div class="car-foot">
           <div class="car-dots" aria-hidden="true">${fotos.map((_, j) => `<i class="${j ? "" : "on"}"></i>`).join("")}</div>
@@ -86,42 +101,35 @@
       </div>
     </section>` : ""}
 
-    <section aria-labelledby="s-help">
-      <div class="sec-head"><span class="eyebrow rv">Como posso te ajudar</span><h2 class="rv" style="--d:.1s" id="s-help">Escolha e me chame, <span>eu te respondo.</span></h2></div>
-      <div class="links">${intents.map(i => link(wa(i.msg), i.title.includes("Envio") ? "box" : i.title.includes("Pronta") ? "star" : "chat", i.title, i.sub)).join("")}</div>
-    </section>
-
-    <section aria-labelledby="s-sobre">
-      <div class="sec-head"><span class="eyebrow rv">Sobre mim</span><h2 class="rv" style="--d:.1s" id="s-sobre">Prazer, <span>${esc(first)}.</span></h2></div>
-      <div class="sobre-tx">${p.bio.map((t, k) => `<p class="rv" style="--d:${k * .12}s">${esc(t)}</p>`).join("")}</div>
-      <div class="services">
-        <div class="svc rv"><h3>Bolsas de couro</h3><p>Modelos escolhidos a dedo, com acabamento caprichado.</p><span class="tag">Divino</span></div>
-        <div class="svc rv"><h3>Atendimento pessoal</h3><p>Em Macapá/AP e Goiânia/GO, direto comigo.</p><span class="tag">AP · GO</span></div>
-        <div class="svc rv"><h3>Envio para todo o Brasil</h3><p>E facilidade no pagamento.</p><span class="tag">Brasil</span></div>
+    <section class="ajuda gutter" aria-labelledby="s-ajuda">
+      <div class="envelope rv zoom">
+        <div class="aba">${aba}</div>${fecho}
+        <h2 id="s-ajuda">Como posso ajudar você?</h2>
+        <ul>${intents.map((i, k) => `<li class="rv" style="--d:${.15 + k * .1}s"><a href="${esc(wa(i.msg))}" target="_blank" rel="noopener"><span>${esc(i.title)};<small>${esc(i.sub)}</small></span>${icon("arrow")}</a></li>`).join("")}</ul>
       </div>
     </section>
 
-    <div class="qr rv">
-      <div class="qr-box" id="qr" role="img" aria-label="QR code deste cartão"></div>
-      <div><h3>Aponte a câmera</h3><p>Este QR code abre o cartão da ${esc(first)}. Mostre na tela e a pessoa já sai com o contato.</p></div>
-    </div>
-
-    <section class="cta rv zoom" aria-labelledby="s-cta">
-      <span class="eyebrow">Vamos conversar</span>
-      <h2 id="s-cta">Sua próxima <em>bolsa favorita</em> está a uma mensagem.</h2>
-      <div class="links">${link(wa(p.whatsappMsg), "whatsapp", `Chamar a ${first}`, "WhatsApp " + p.phone.replace("+55 ", ""), true)}</div>
+    <section class="sobre" aria-labelledby="s-sobre">
+      <img src="${esc(p.photoSobre)}" alt="" loading="lazy">
+      <div class="tx gutter">
+        <span class="olho2 rotulo rv">Sobre mim</span>
+        <h2 class="rv" style="--d:.1s" id="s-sobre">${esc(first)}<br><em>${esc(resto.join(" "))}</em></h2>
+        <span class="cargo2 rv" style="--d:.18s">${esc(p.role)} · ${esc(p.places.join(" e "))}</span>
+        ${p.bio.map((t, k) => `<p class="rv" style="--d:${.25 + k * .1}s">${esc(t)}</p>`).join("")}
+        <a class="fale rv" style="--d:.45s" href="${esc(wa(p.whatsappMsg))}" target="_blank" rel="noopener">Fale comigo agora ${icon("arrow")}</a>
+      </div>
     </section>
 
-    <footer class="rv">
-      <span class="foot-logo"><img src="${esc(p.logo)}" alt="Divino Couro"></span>
-      <span class="tagline">${esc(p.signature)}</span>
-      <div class="foot-row"><span>© ${new Date().getFullYear()} ${esc(p.name)}</span><button type="button" data-replay>Rever abertura</button></div>
+    <footer class="gutter rv">
+      <span class="assin">${esc(p.signature)}</span>
+      <span class="rotulo">${esc(p.name)} · ${esc(p.company)}</span>
+      <div class="foot-row"><span>© ${new Date().getFullYear()} ${esc(p.company)}</span><button type="button" data-replay>Rever abertura</button></div>
       <a class="credit" href="${esc(company.site)}" target="_blank" rel="noopener">Cartão feito por HM Digital</a>
     </footer>`;
 
   document.documentElement.classList.add("rv-on");
   const main = document.createElement("main");
-  main.className = "wrap";
+  main.className = "pagina";
   main.innerHTML = html;
   document.body.appendChild(main);
   document.body.insertAdjacentHTML("beforeend", '<div class="toast" id="toast" role="status" aria-live="polite"></div>');
@@ -138,8 +146,7 @@
   }));
 
   document.querySelectorAll("[data-vcard]").forEach(b => b.addEventListener("click", () => {
-    const [given, ...rest] = p.name.split(" ");
-    const vcf = ["BEGIN:VCARD", "VERSION:3.0", `N:${rest.join(" ")};${given};;;`, `FN:${p.name}`, `ORG:${p.company}`, "TITLE:CEO",
+    const vcf = ["BEGIN:VCARD", "VERSION:3.0", `N:${resto.join(" ")};${first};;;`, `FN:${p.name}`, `ORG:${p.company}`, "TITLE:CEO",
       `TEL;TYPE=CELL:${p.phone.replace(/[^\d+]/g, "")}`, `URL:${location.href}`, `X-SOCIALPROFILE;TYPE=instagram:${ig(p.instagram)}`, "END:VCARD"].join("\r\n");
     const url = URL.createObjectURL(new Blob([vcf], { type: "text/vcard" }));
     const a = Object.assign(document.createElement("a"), { href: url, download: "leticia-caroline.vcf" });
@@ -164,19 +171,19 @@
     sync();
   }
 
-  // tela cheia (portfólio e foto principal)
+  // tela cheia
   const box = document.createElement("div");
   box.className = "lightbox"; box.hidden = true;
   box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true"); box.setAttribute("aria-label", "Fotos em tela cheia");
   document.body.appendChild(box);
-  function abrir(lista, j) {
-    box.innerHTML = `<div class="lb-top"><span class="lb-count">${j + 1}/${lista.length}</span><button type="button" class="lb-close" aria-label="Fechar">✕</button></div>
-      <div class="lb-track">${lista.map(f => `<figure><img src="${esc(f.src)}" alt="${esc(f.alt)}"></figure>`).join("")}</div>`;
+  function abrir(j) {
+    box.innerHTML = `<div class="lb-top"><span class="lb-count">${j + 1}/${fotos.length}</span><button type="button" class="lb-close" aria-label="Fechar">✕</button></div>
+      <div class="lb-track">${fotos.map(f => `<figure><img src="${esc(f.src)}" alt="${esc(f.alt)}"></figure>`).join("")}</div>`;
     box.hidden = false;
     document.documentElement.classList.add("intro-lock");
     const tr = box.querySelector(".lb-track"), cnt = box.querySelector(".lb-count");
     requestAnimationFrame(() => { tr.scrollLeft = j * tr.clientWidth });
-    tr.addEventListener("scroll", () => { cnt.textContent = `${Math.round(tr.scrollLeft / tr.clientWidth) + 1}/${lista.length}` }, { passive: true });
+    tr.addEventListener("scroll", () => { cnt.textContent = `${Math.round(tr.scrollLeft / tr.clientWidth) + 1}/${fotos.length}` }, { passive: true });
     box.querySelector(".lb-close").addEventListener("click", fechar);
     box.onkeydown = e => {
       if (e.key === "Escape") fechar();
@@ -186,25 +193,7 @@
     box.tabIndex = -1; box.focus();
   }
   function fechar() { box.hidden = true; box.innerHTML = ""; document.documentElement.classList.remove("intro-lock") }
-  document.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => abrir(fotos, Number(b.dataset.open))));
-  document.querySelector("[data-foto]").addEventListener("click", () => abrir([{ src: p.photo, alt: `Foto de ${p.name}` }], 0));
-
-  // QR code
-  const qr = document.getElementById("qr");
-  if (qr && window.qrcode) {
-    const code = qrcode(0, "M"); code.addData(location.href.startsWith("http") ? location.href : "https://links.hmdigitalgo.com"); code.make();
-    qr.innerHTML = code.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
-  } else if (qr) qr.hidden = true;
-
-  // brilho que segue o dedo no cartão
-  const card = document.getElementById("card");
-  if (card && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    card.addEventListener("pointermove", e => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", ((e.clientX - r.left) / r.width) * 100 + "%");
-      card.style.setProperty("--my", ((e.clientY - r.top) / r.height) * 100 + "%");
-    });
-  }
+  document.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => abrir(Number(b.dataset.open))));
 
   document.querySelectorAll("[data-replay]").forEach(b => b.addEventListener("click", () => { scrollTo({ top: 0 }); window.HMIntro && HMIntro.play() }));
 

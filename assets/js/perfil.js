@@ -4,6 +4,7 @@ window.HM_PROFILE = {
   name: "Letícia Caroline",
   role: "CEO da Divino Couro",
   photo: "assets/img/principal.webp",
+  photoSobre: "assets/img/sobre.webp",
   logo: "assets/img/logo.jpg",
   status: "Atendendo agora",
   places: ["Macapá/AP", "Goiânia/GO"],
@@ -31,11 +32,11 @@ window.HM_INTENTS = [
 
 // Portfólio em carrossel: só as bolsas (fotos 4:5 em assets/img/)
 window.HM_PORTFOLIO = [
-  { src: "assets/img/b1.webp", alt: "Bolsa tote preta de couro" },
-  { src: "assets/img/b2.webp", alt: "Bolsa marrom de couro com alça de mão" },
-  { src: "assets/img/b3.webp", alt: "Bolsa de ombro preta" },
-  { src: "assets/img/b4.webp", alt: "Bolsa transversal preta matelassê" },
-  { src: "assets/img/b5.webp", alt: "Bolsa de mão preta com alça" }
+  { src: "assets/img/b1.webp", alt: "Bolsa tote preta de couro", title: "Tote", sub: "Couro preto · alça de ombro" },
+  { src: "assets/img/b2.webp", alt: "Bolsa marrom de couro com alça de mão", title: "Café", sub: "Couro marrom · alça de mão" },
+  { src: "assets/img/b3.webp", alt: "Bolsa de ombro preta", title: "Clássica", sub: "Bolsa de ombro preta" },
+  { src: "assets/img/b4.webp", alt: "Bolsa transversal preta matelassê", title: "Matelassê", sub: "Transversal preta" },
+  { src: "assets/img/b5.webp", alt: "Bolsa de mão preta com alça", title: "Elegance", sub: "Bolsa de mão preta" }
 ];
 
 // Crédito de quem fez o cartão
