@@ -17,7 +17,7 @@ window.HM_PROFILE = {
   whatsappMsg: "Oi, Letícia! Vim pelo seu cartão e quero conhecer as bolsas da Divino Couro.",
   phone: "+55 96 99185-0131",
   instagram: "let_carolinee",          // pessoal
-  instagramLoja: "courocafe_ap",       // Divino Couro
+  instagramLoja: "divinocouro_",       // Divino Couro
   catalogo: "",                        // link do catálogo (vazio = "Em breve")
   site: "",                            // link do site (vazio = "Em breve")
   company: "Divino Couro"

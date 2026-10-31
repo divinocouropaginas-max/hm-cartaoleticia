@@ -105,7 +105,7 @@
       <div class="envelope rv zoom">
         <div class="aba">${aba}</div>${fecho}
         <h2 id="s-ajuda">Como posso ajudar você?</h2>
-        <ul>${intents.map((i, k) => `<li class="rv" style="--d:${.15 + k * .1}s"><a href="${esc(wa(i.msg))}" target="_blank" rel="noopener"><span>${esc(i.title)};<small>${esc(i.sub)}</small></span>${icon("arrow")}</a></li>`).join("")}</ul>
+        <ul>${intents.map((i, k) => `<li class="rv" style="--d:${.15 + k * .1}s"><a href="${esc(wa(i.msg))}" target="_blank" rel="noopener"><span>${esc(i.title)}<small>${esc(i.sub)}</small></span>${icon("arrow")}</a></li>`).join("")}</ul>
       </div>
     </section>
 
