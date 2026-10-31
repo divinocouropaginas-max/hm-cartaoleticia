@@ -41,4 +41,4 @@ window.HM_PORTFOLIO = [
 ];
 
 // Crédito de quem fez o cartão
-window.HM_COMPANY = { name: "HM Digital", site: "https://links.hmdigitalgo.com", logo: "" }; // quando chegar a logo da HM: logo = caminho do arquivo em assets/img
+window.HM_COMPANY = { name: "HM Digital", site: "https://links.hmdigitalgo.com", logo: "assets/img/logo-hm.webp" };
