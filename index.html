@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Letícia Caroline · Divino Couro</title>
+<meta name="description" content="Letícia Caroline, CEO da Divino Couro. Bolsas de couro em Macapá e Goiânia, com envio para todo o Brasil.">
+<meta name="theme-color" content="#1a100a">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Letícia Caroline · Divino Couro">
+<meta property="og:description" content="Bolsas de couro escolhidas a dedo. Fale comigo no WhatsApp.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta property="og:image:width" content="600">
+<meta property="og:image:height" content="600">
+<meta property="og:locale" content="pt_BR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Manrope:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+<style>:root{--couro:url(assets/img/couro.jpg)}</style>
+</head>
+<body>
+<noscript><p style="padding:24px">Ative o JavaScript para ver este cartão.</p></noscript>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+  // abertura: quadros da Letícia em traço dourado
+  window.LC_ASSETS = {
+    couro: "assets/img/couro.jpg",
+    frames: Array.from({ length: 90 }, (_, i) => `assets/frames/${String(i).padStart(3, "0")}.webp`),
+    fps: 15,
+    cabelo: { x: 0.74, y: 0.09, quadro: 74 }
+  };
+</script>
+<script src="assets/js/perfil.js?v=1"></script>
+<script src="assets/js/intro.js?v=1"></script>
+<script src="assets/js/card.js?v=1"></script>
+</body>
+</html>
