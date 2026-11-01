@@ -7,8 +7,9 @@ perfil = open('assets/js/perfil.js').read()
 perfil = re.sub(r'"(assets/img/[^"]+)"', lambda m: json.dumps(uri(m.group(1))), perfil)
 assets = 'window.LC_ASSETS=' + json.dumps({
     "couro": uri('assets/img/couro.jpg'),
-    "frames": [uri(f) for f in sorted(glob.glob('assets/frames/*.webp'))],
-    "fps": 15, "cabelo": {"x": 0.74, "y": 0.09, "quadro": 74},
+    "video": "data:video/mp4;base64," + base64.b64encode(open('assets/abertura.mp4', 'rb').read()).decode(),
+    "videoWebm": "data:video/webm;base64," + base64.b64encode(open('assets/abertura.webm', 'rb').read()).decode(),
+    "videoSize": [514, 984], "dur": 6, "fps": 24, "cabelo": {"x": 0.74, "y": 0.09, "quadro": 118},
     "logo": uri('assets/img/logo-mono.webp')}) + ';'
 css = open('assets/css/style.css').read()
 couro = uri('assets/img/couro.jpg')

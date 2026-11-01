@@ -7,7 +7,7 @@
 //
 // Uso: HMIntro.play()  -> toca a abertura (retorna uma Promise)
 //      HMIntro.auto()  -> toca só na primeira visita da sessão
-// Precisa de window.LC_ASSETS = { couro: url, frames: [url...], fps, cabelo: {x,y,quadro} }
+// Precisa de window.LC_ASSETS = { couro, video, videoSize: [w,h], dur, fps, cabelo: {x,y,quadro}, logo }
 (function () {
   const A = window.LC_ASSETS;
   const C = { ouro: "#d8b47a", ouroClaro: "#f6e3bd" };
@@ -52,7 +52,7 @@
     padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px))}
   .lc-pessoa{position:relative;height:min(60vh,620px);aspect-ratio:var(--ar)}
   .lc-quadros,.lc-poeira{position:absolute;inset:0;width:100%;height:100%}
-  .lc-quadros{clip-path:inset(0 0 100% 0)}
+  .lc-quadros{clip-path:inset(0 0 100% 0);object-fit:contain;mix-blend-mode:screen;background:#000}
   .lc-scan{position:absolute;left:-12%;right:-12%;top:0;height:3px;opacity:0;mix-blend-mode:screen;
     background:linear-gradient(90deg,rgba(255,150,50,0),rgba(255,190,90,.95) 15%,#fff1c8 50%,rgba(255,190,90,.95) 85%,rgba(255,150,50,0));
     box-shadow:0 0 12px 3px rgba(255,140,40,.55)}
@@ -66,22 +66,33 @@
   .lc-ass{font:400 10.5px "Prata",Georgia,serif;letter-spacing:5px}
   html.intro-lock,html.intro-lock body{overflow:hidden}`;
 
-  // carrega todos os quadros antes de começar
+  // carrega o vídeo em traço dourado (fundo preto, fundido sobre o couro) antes de começar
   let cache;
   function carregar() {
     if (cache) return cache;
-    cache = Promise.all(A.frames.map(src => new Promise(ok => {
-      const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = src;
-    })));
+    cache = new Promise(ok => {
+      const v = document.createElement("video");
+      v.muted = true; v.defaultMuted = true; v.playsInline = true; v.preload = "auto";
+      v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("webkit-playsinline", "");
+      let feito = false;
+      const pronto = () => { if (!feito) { feito = true; ok(v) } };
+      v.addEventListener("canplaythrough", pronto, { once: true });
+      v.addEventListener("loadeddata", () => setTimeout(pronto, 1200), { once: true });
+      v.addEventListener("error", () => { feito = true; ok(null) }, { once: true });
+      setTimeout(() => { if (!feito) { feito = true; ok(v.readyState >= 2 ? v : null) } }, 6000);
+      // MP4 (H.264) para Safari/iPhone e a maioria; WebM (VP9) como reserva
+      const mp4 = v.canPlayType('video/mp4; codecs="avc1.42E01E"');
+      v.src = (!mp4 && A.videoWebm) ? A.videoWebm : A.video; v.load();
+    });
     return cache;
   }
 
   async function play() {
     if (!window.gsap || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!document.getElementById("lc-intro-css")) document.head.insertAdjacentHTML("beforeend", `<style id="lc-intro-css">${css}</style>`);
-    const [frames] = await Promise.all([carregar(), Promise.race([document.fonts.load('72px "Prata"'), new Promise(r => setTimeout(r, 1500))]).catch(() => {})]);
-    const f0 = frames.find(Boolean);
-    if (!f0) return;
+    const [video] = await Promise.all([carregar(), Promise.race([document.fonts.load('72px "Prata"'), new Promise(r => setTimeout(r, 1500))]).catch(() => {})]);
+    if (!video) return;
+    const f0 = { width: video.videoWidth || A.videoSize[0], height: video.videoHeight || A.videoSize[1] };
 
     const root = document.createElement("div");
     root.className = "intro";
@@ -91,18 +102,12 @@
     const $ = s => root.querySelector(s);
     const NS = "http://www.w3.org/2000/svg";
 
-    // quadros
-    const cv = $(".lc-quadros"), ctx = cv.getContext("2d");
-    cv.width = f0.width; cv.height = f0.height;
-    const quadro = { i: 0 };
-    let ultimo = -1;
-    function desenha() {
-      const i = Math.min(frames.length - 1, Math.max(0, Math.round(quadro.i)));
-      if (i === ultimo || !frames[i]) return;
-      ultimo = i;
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      ctx.drawImage(frames[i], 0, 0);
-    }
+    // vídeo dela no lugar do antigo canvas de quadros
+    video.className = "lc-quadros";
+    $(".lc-quadros").replaceWith(video);
+    video.pause(); try { video.currentTime = 0 } catch {}
+    const desenha = () => {};
+    const tocar = () => { try { video.currentTime = 0 } catch {} const p = video.play(); if (p && p.catch) p.catch(() => {}) };
 
     // poeira dourada do cabelo (canvas por cima dela)
     const pc = $(".lc-poeira"), px = pc.getContext("2d");
@@ -149,7 +154,7 @@
       }
     }
 
-    const dur = frames.length / A.fps;               // duração do vídeo
+    const dur = video.duration || A.dur;             // duração do vídeo
     const tCabelo = A.cabelo.quadro / A.fps;          // quando ela joga o cabelo
     const tl = gsap.timeline({ paused: true, onUpdate: () => { desenha(); animaPoeira() } });
 
@@ -161,7 +166,7 @@
       .fromTo($(".lc-quadros"), { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.1, ease: "power1.inOut" }, .2)
       .to($(".lc-scan"), { opacity: 0, duration: .25 }, 1.25)
       // vídeo dela andando, virando e jogando o cabelo
-      .to(quadro, { i: frames.length - 1, duration: dur, ease: "none" }, .25)
+      .call(tocar, null, .25)
       // enquanto anda (de perfil), o couro desliza no sentido contrário
       .to(root.querySelector(".lc-couro"), { x: "-12%", duration: tCabelo * .62, ease: "sine.inOut" }, .25)
       // brilho do cabelo
@@ -223,6 +228,7 @@
         if (done) return;
         done = true;
         root.classList.add("intro-out");
+        setTimeout(() => video.pause(), 1200);
         document.documentElement.classList.remove("intro-lock");
         resolve();                                   // o cartão já começa a aparecer por baixo
         if (voo && !pulou && Number(getComputedStyle(voo).opacity) > .5) {
