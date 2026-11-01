@@ -1,5 +1,5 @@
 // POST /api/foto { tipo, dados (base64) }: guarda uma foto já reduzida pelo painel e devolve o endereço.
-import { tokenValido, salvarFoto, lerCorpo, json, LIMITES } from "./_lib.js";
+import { tokenValido, salvarFoto, lerCorpo, json, LIMITES, motivo } from "./_lib.js";
 
 export const config = { api: { bodyParser: { sizeLimit: "4.5mb" } } };
 
@@ -14,6 +14,6 @@ export default async function handler(req, res) {
   try {
     return json(res, 200, { url: await salvarFoto(buffer, tipo) });
   } catch (e) {
-    return json(res, 500, { erro: "Não consegui enviar a foto agora. Tente de novo." });
+    return json(res, 500, { erro: "Não consegui enviar a foto agora.", detalhe: motivo(e) });
   }
 }

@@ -150,7 +150,7 @@
     const r = await fetch("/api/" + rota, { method: corpo ? "POST" : "GET", headers: { "Content-Type": "application/json", ...(token ? { Authorization: "Bearer " + token } : {}) }, body: corpo ? JSON.stringify(corpo) : undefined });
     const d = await r.json().catch(() => ({}));
     if (r.status === 401 && rota !== "login") { sair(); throw new Error(d.erro || "Sessão expirada.") }
-    if (!r.ok) throw new Error(d.erro || "Algo deu errado.");
+    if (!r.ok) throw new Error((d.erro || "Algo deu errado.") + (d.detalhe ? " " + d.detalhe : ""));
     return d;
   }
   function sair() { token = ""; try { sessionStorage.removeItem("lc-admin") } catch {} $("painel").hidden = true; $("barra").hidden = true; $("entrar").hidden = false }
@@ -167,10 +167,12 @@
 
   async function abrir() {
     let salvo = null;
-    try { const d = await api("conteudo"); salvo = d.conteudo; if (d.limites) LIM = d.limites } catch {}
+    let config = null;
+    try { const d = await api("conteudo"); salvo = d.conteudo; if (d.limites) LIM = d.limites; config = d.config } catch {}
     dados = Object.assign(padrao(), salvo || {});
     preencher();
     $("entrar").hidden = true; $("painel").hidden = false; $("barra").hidden = false;
+    if (config && !config.armazenamento) aviso("Atenção: o armazenamento (Blob) ainda não está ligado ao projeto no Vercel. Sem ele não dá para salvar.", "erro");
   }
 
   // ---------- campos de texto com contador ----------
