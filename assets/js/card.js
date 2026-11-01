@@ -1,6 +1,6 @@
 // Monta o cartão da Letícia a partir de assets/js/perfil.js.
 // Layout editorial (modelo "Luana Souza") com os botões no padrão HM logo abaixo da foto.
-(function () {
+(window.HM_PRONTO || Promise.resolve()).then(function () {
   const p = window.HM_PROFILE;
   const intents = window.HM_INTENTS || [];
   const fotos = window.HM_PORTFOLIO || [];
@@ -70,9 +70,7 @@
     </section>
 
     <div class="faixa">
-      <div class="rv" style="--d:.05s"><span class="rotulo">Atuação</span><small>Bolsas de couro</small></div>
-      <div class="rv" style="--d:.15s"><span class="rotulo">Atendimento</span><small>${esc(p.places.map(c => c.split("/")[0]).join(" · "))}</small></div>
-      <div class="rv" style="--d:.25s"><span class="rotulo">Entrega</span><small>Todo o Brasil</small></div>
+      ${(p.faixa || []).map((f, k) => `<div class="rv" style="--d:${(.05 + k * .1).toFixed(2)}s"><span class="rotulo">${esc(f.rotulo)}</span><small>${esc(f.texto)}</small></div>`).join("")}
     </div>
 
     <nav class="contatos gutter" aria-label="Contatos">
@@ -270,4 +268,4 @@
     els.forEach(el => io.observe(el));
   }
   Promise.resolve(window.HMIntro ? HMIntro.auto() : null).then(observar);
-})();
+});

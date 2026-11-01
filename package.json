@@ -1,0 +1,9 @@
+{
+  "name": "hm-cartaoleticia",
+  "private": true,
+  "type": "module",
+  "description": "Cartão digital da Letícia Caroline (Divino Couro) com painel de edição",
+  "dependencies": {
+    "@vercel/blob": "0.27.3"
+  }
+}

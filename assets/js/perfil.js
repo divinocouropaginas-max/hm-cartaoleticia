@@ -9,6 +9,11 @@ window.HM_PROFILE = {
   logoMono: "assets/img/logo-mono.webp",
   status: "Atendendo agora",
   places: ["Macapá/AP", "Goiânia/GO"],
+  faixa: [
+    { rotulo: "Atuação", texto: "Bolsas de couro" },
+    { rotulo: "Atendimento", texto: "Macapá · Goiânia" },
+    { rotulo: "Entrega", texto: "Todo o Brasil" }
+  ],
   bio: [
     "Sou a Letícia Caroline, CEO da Divino Couro. Escolho cada bolsa pensando na mulher que quer elegância no dia a dia: peças em couro, com acabamento caprichado, que acompanham você do trabalho ao jantar.",
     "Atendo pessoalmente em Macapá e Goiânia, envio para todo o Brasil e facilito o pagamento para você."
