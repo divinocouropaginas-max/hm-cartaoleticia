@@ -38,8 +38,11 @@
   </div>`;
 
   const css = `
-  .intro{position:fixed;inset:0;z-index:100;background:#1e120b;overflow:hidden;transition:opacity .7s ease}
+  .intro{position:fixed;inset:0;z-index:100;background:#1e120b;overflow:hidden;transition:opacity 1.15s cubic-bezier(.4,0,.2,1)}
   .intro.intro-out{opacity:0;pointer-events:none}
+  .intro .lc-palco,.intro .lc-couro{transition:transform 1.25s cubic-bezier(.4,0,.2,1),filter 1.25s ease}
+  .intro.intro-out .lc-palco{transform:scale(1.06);filter:blur(6px)}
+  .intro.intro-out .lc-couro{filter:blur(3px) brightness(1.15)}
   .lc-couro{position:absolute;inset:-6% -30% -6% -6%;background:url("${A.couro}") 0 50%/auto 120% repeat-x;opacity:0}
   .lc-spot{position:absolute;inset:0;pointer-events:none;background:
     radial-gradient(ellipse 60% 45% at 50% 40%,rgba(255,215,160,.13) 0%,rgba(255,215,160,.03) 45%,rgba(0,0,0,0) 70%),
@@ -175,9 +178,9 @@
       .to(ponta, { opacity: 0, duration: .3 }, tVirada - .15)
       .fromTo("#lc-sob", { opacity: 0, letterSpacing: "18px" }, { opacity: 1, letterSpacing: "9px", duration: .9, ease: "power2.out" }, tVirada + .05)
       .to(est, { opacity: 1, scale: 1, rotation: 0, duration: .55, ease: "back.out(2.4)" }, tVirada + .3)
-      .to(est, { scale: .55, rotation: 45, duration: .45, yoyo: true, repeat: 1, ease: "sine.inOut" })
-      .fromTo("#lc-ass", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: .8, ease: "power2.out" }, tVirada + .55)
-      .to({}, { duration: 1.6 });
+      .to(est, { scale: .55, rotation: 45, duration: .4, yoyo: true, repeat: 1, ease: "sine.inOut" }, tVirada + .85)
+      .fromTo("#lc-ass", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: .7, ease: "power2.out" }, tVirada + .5)
+      .to({}, { duration: .45 });
 
     return new Promise(resolve => {
       let done = false;
@@ -186,7 +189,8 @@
         done = true;
         root.classList.add("intro-out");
         document.documentElement.classList.remove("intro-lock");
-        setTimeout(() => { tl.kill(); root.remove(); resolve() }, 700);
+        resolve();                                   // o cartão já começa a aparecer por baixo
+        setTimeout(() => { tl.kill(); root.remove() }, 1300);
       };
       tl.call(finish);
       $(".intro-skip").addEventListener("click", finish);
