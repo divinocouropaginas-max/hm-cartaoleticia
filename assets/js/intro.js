@@ -41,8 +41,9 @@
   .lc-voo{position:fixed;z-index:120;height:auto;pointer-events:none;transform-origin:50% 50%;will-change:left,top,width}
   .intro{position:fixed;inset:0;z-index:100;background:#1e120b;overflow:hidden;transition:opacity 1.15s cubic-bezier(.4,0,.2,1)}
   .intro.intro-out{opacity:0;pointer-events:none}
-  .intro .lc-palco,.intro .lc-couro{transition:transform 1.25s cubic-bezier(.4,0,.2,1),filter 1.25s ease}
-  .intro.intro-out .lc-palco{transform:scale(1.06);filter:blur(6px)}
+  .intro .lc-couro,.intro .lc-quadros,.intro .lc-nome-svg{transition:transform 1.25s cubic-bezier(.4,0,.2,1),filter 1.25s ease}
+  .intro.intro-out .lc-quadros{transform:scale(1.05);filter:blur(5px)}
+  .intro.intro-out .lc-nome-svg{transform:scale(1.05);filter:blur(5px)}
   .intro.intro-out .lc-couro{filter:blur(3px) brightness(1.15)}
   .lc-couro{position:absolute;inset:-6% -30% -6% -6%;background:url("${A.couro}") 0 50%/auto 120% repeat-x;opacity:0}
   .lc-spot{position:absolute;inset:0;pointer-events:none;background:
@@ -199,7 +200,8 @@
       const W0 = Math.min(innerWidth * .46, 200);
       gsap.set(voo, { width: W0, left: innerWidth / 2 - W0 / 2, top: innerHeight * .4 - W0 * .45, opacity: 0, scale: .7 });
       const tLogo = tVirada + 1.05;
-      tl.to([".lc-pessoa", nomeSvg], { opacity: .18, filter: "blur(3px)", duration: .55, ease: "power2.inOut" }, tLogo)
+      // esmaece direto no vídeo (e não na caixa dele), senão o fundo preto do vídeo aparece
+      tl.to([video, $(".lc-poeira"), nomeSvg], { opacity: .18, duration: .55, ease: "power2.inOut" }, tLogo)
         .to(voo, { opacity: 1, scale: 1, duration: .7, ease: "back.out(1.6)" }, tLogo + .05)
         .fromTo(voo, { filter: "drop-shadow(0 0 0 rgba(255,214,150,0))" }, { filter: "drop-shadow(0 0 22px rgba(255,214,150,.75))", duration: .5, yoyo: true, repeat: 1, ease: "sine.inOut" }, tLogo + .35)
         .to({}, { duration: .25 });
