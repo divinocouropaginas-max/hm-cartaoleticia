@@ -8,7 +8,8 @@ perfil = re.sub(r'"(assets/img/[^"]+)"', lambda m: json.dumps(uri(m.group(1))), 
 assets = 'window.LC_ASSETS=' + json.dumps({
     "couro": uri('assets/img/couro.jpg'),
     "frames": [uri(f) for f in sorted(glob.glob('assets/frames/*.webp'))],
-    "fps": 15, "cabelo": {"x": 0.74, "y": 0.09, "quadro": 74}}) + ';'
+    "fps": 15, "cabelo": {"x": 0.74, "y": 0.09, "quadro": 74},
+    "logo": uri('assets/img/logo-mono.webp')}) + ';'
 css = open('assets/css/style.css').read()
 couro = uri('assets/img/couro.jpg')
 

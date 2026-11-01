@@ -38,6 +38,7 @@
   </div>`;
 
   const css = `
+  .lc-voo{position:fixed;z-index:120;height:auto;pointer-events:none;transform-origin:50% 50%;will-change:left,top,width}
   .intro{position:fixed;inset:0;z-index:100;background:#1e120b;overflow:hidden;transition:opacity 1.15s cubic-bezier(.4,0,.2,1)}
   .intro.intro-out{opacity:0;pointer-events:none}
   .intro .lc-palco,.intro .lc-couro{transition:transform 1.25s cubic-bezier(.4,0,.2,1),filter 1.25s ease}
@@ -180,20 +181,57 @@
       .to(est, { opacity: 1, scale: 1, rotation: 0, duration: .55, ease: "back.out(2.4)" }, tVirada + .3)
       .to(est, { scale: .55, rotation: 45, duration: .4, yoyo: true, repeat: 1, ease: "sine.inOut" }, tVirada + .85)
       .fromTo("#lc-ass", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: .7, ease: "power2.out" }, tVirada + .5)
-      .to({}, { duration: .45 });
+      .to({}, { duration: .2 });
+
+    // logo da Divino Couro: aparece grande no centro e depois voa até o canto da foto no cartão
+    const alvo = document.querySelector(A.logoAlvo || ".capa .marca .mono");
+    let voo = null;
+    if (A.logo && alvo) {
+      alvo.style.opacity = "0";
+      voo = document.createElement("img");
+      voo.src = A.logo; voo.alt = ""; voo.className = "lc-voo";
+      document.body.appendChild(voo);
+      const W0 = Math.min(innerWidth * .46, 200);
+      gsap.set(voo, { width: W0, left: innerWidth / 2 - W0 / 2, top: innerHeight * .4 - W0 * .45, opacity: 0, scale: .7 });
+      const tLogo = tVirada + 1.05;
+      tl.to([".lc-pessoa", nomeSvg], { opacity: .18, filter: "blur(3px)", duration: .55, ease: "power2.inOut" }, tLogo)
+        .to(voo, { opacity: 1, scale: 1, duration: .7, ease: "back.out(1.6)" }, tLogo + .05)
+        .fromTo(voo, { filter: "drop-shadow(0 0 0 rgba(255,214,150,0))" }, { filter: "drop-shadow(0 0 22px rgba(255,214,150,.75))", duration: .5, yoyo: true, repeat: 1, ease: "sine.inOut" }, tLogo + .35)
+        .to({}, { duration: .25 });
+    }
+    function voar() {
+      if (!voo) return;
+      const r0 = voo.getBoundingClientRect();
+      const p = { t: 0 };
+      gsap.to(p, {
+        t: 1, duration: 1.05, ease: "power3.inOut",
+        onUpdate() {
+          const r = alvo.getBoundingClientRect();           // segue o alvo mesmo enquanto o cartão se ajeita
+          const w = r0.width + (r.width - r0.width) * p.t;
+          voo.style.width = w + "px";
+          voo.style.left = (r0.left + (r.left - r0.left) * p.t) + "px";
+          voo.style.top = (r0.top + (r.top - r0.top) * p.t) + "px";
+          voo.style.filter = `drop-shadow(0 ${2 * p.t}px ${8 + 10 * (1 - p.t)}px rgba(0,0,0,${.35 * p.t}))`;
+        },
+        onComplete() { alvo.style.opacity = ""; voo.remove(); voo = null }
+      });
+    }
 
     return new Promise(resolve => {
       let done = false;
-      const finish = () => {
+      const finish = (pulou) => {
         if (done) return;
         done = true;
         root.classList.add("intro-out");
         document.documentElement.classList.remove("intro-lock");
         resolve();                                   // o cartão já começa a aparecer por baixo
+        if (voo && !pulou && Number(getComputedStyle(voo).opacity) > .5) {
+          gsap.set(voo, { scale: 1 }); voar();
+        } else if (voo) { voo.remove(); voo = null; if (alvo) alvo.style.opacity = "" }
         setTimeout(() => { tl.kill(); root.remove() }, 1300);
       };
-      tl.call(finish);
-      $(".intro-skip").addEventListener("click", finish);
+      tl.call(() => finish(false));
+      $(".intro-skip").addEventListener("click", () => finish(true));
       document.documentElement.classList.add("intro-lock");
       desenha();
       tl.play();
