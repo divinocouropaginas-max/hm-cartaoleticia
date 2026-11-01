@@ -104,14 +104,16 @@ export async function salvarFoto(buffer, tipo) {
 // Explica em português o motivo de uma falha no armazenamento (sem expor segredos)
 export function motivo(e) {
   const m = String(e && e.message || e || "");
-  if (!process.env.BLOB_READ_WRITE_TOKEN || /No token found|BLOB_READ_WRITE_TOKEN/i.test(m))
+  if (!temBlob() || /No token found|BLOB_READ_WRITE_TOKEN|BLOB_STORE_ID/i.test(m))
     return "O armazenamento (Blob) não está ligado ao projeto no Vercel. Ligue o Blob em Storage e faça um Redeploy.";
   if (/private/i.test(m) && /access/i.test(m))
     return "O Blob foi criado como privado. Crie um Blob público (Public) e ligue ao projeto.";
   if (/suspended|quota|limit/i.test(m)) return "O armazenamento do Vercel atingiu o limite do plano.";
   return m.replace(/vercel_blob_rw_[\w]+/g, "***").slice(0, 200);
 }
-export const configuracao = () => ({ armazenamento: !!process.env.BLOB_READ_WRITE_TOKEN, senha: !!process.env.ADMIN_SENHA });
+// Blob ligado ao projeto: chave antiga (BLOB_READ_WRITE_TOKEN) ou o jeito novo do Vercel (BLOB_STORE_ID + OIDC)
+const temBlob = () => !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
+export const configuracao = () => ({ armazenamento: temBlob(), senha: !!process.env.ADMIN_SENHA });
 
 export async function lerCorpo(req) {
   if (req.body && typeof req.body === "object") return req.body;

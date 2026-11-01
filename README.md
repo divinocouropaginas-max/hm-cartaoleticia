@@ -22,6 +22,6 @@ A Letícia entra em `/admin` com a senha e altera fotos (banner, Sobre mim, port
 - `assets/js/conteudo.js`: o cartão lê o conteúdo salvo e aplica por cima de `perfil.js`
 
 Configuração no Vercel (projeto `hm-cartaoleticia`):
-1. Um **Blob store** ligado ao projeto (cria a variável `BLOB_READ_WRITE_TOKEN`)
+1. Um **Blob store** público ligado ao projeto (o Vercel cria `BLOB_STORE_ID` e autentica sozinho via OIDC; a chave antiga `BLOB_READ_WRITE_TOKEN` também funciona)
 2. Variáveis `ADMIN_SENHA` (senha do painel) e `ADMIN_SEGREDO` (texto aleatório longo, assina a sessão)
 3. Fazer um novo deploy depois de criar as variáveis
