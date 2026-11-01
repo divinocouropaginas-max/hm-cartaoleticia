@@ -39,6 +39,11 @@
     `<button type="button" data-share>${icon("share")}Compartilhar</button>`
   ].join("");
 
+  // nome letra a letra
+  const letras = (t, d0) => [...t].map((c, k) => `<span class="l" style="--d:${(d0 + k * .06).toFixed(2)}s">${esc(c)}</span>`).join("");
+  // divisor dourado com a estrelinha da Divino Couro
+  const divisor = () => `<div class="divisor rv" aria-hidden="true"><i></i><svg viewBox="-12 -12 24 24"><path d="M0-11C.6-3.9 3.9-.6 11 0 3.9.6.6 3.9 0 11-.6 3.9-3.9.6-11 0-3.9-.6-.6-3.9 0-11Z"/></svg><i></i></div>`;
+
   // aba do envelope com o fecho de cordão
   const aba = `<svg viewBox="0 0 400 74" preserveAspectRatio="none" aria-hidden="true">
       <path d="M0 0 L200 64 L400 0" fill="none" stroke="rgba(59,51,44,.22)" stroke-width="1"/>
@@ -51,14 +56,15 @@
 
   const html = `
     <section class="capa rv zoom" aria-label="${esc(p.name)}">
-      <img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}" fetchpriority="high">
+      <img class="px" data-px=".22" src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}" fetchpriority="high">
       <div class="topo gutter">
         <span class="marca"><img class="mono" src="${esc(p.logoMono)}" alt="Divino Couro"></span>
         <button class="icon-btn" type="button" data-share aria-label="Compartilhar cartão">${icon("share")}</button>
       </div>
       <span class="status rotulo"><span class="dot"></span>${esc(p.status)}</span>
       <div class="nome gutter">
-        <h1 class="rv" style="--d:.2s">${esc(first)} <em>${esc(resto.join(" "))}</em></h1>
+        <h1 class="letras" aria-label="${esc(p.name)}">${letras(first, .25)} <em>${letras(resto.join(" "), .25 + first.length * .06)}</em><svg class="brilho" viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0-11C.6-3.9 3.9-.6 11 0 3.9.6.6 3.9 0 11-.6 3.9-3.9.6-11 0-3.9-.6-.6-3.9 0-11Z"/></svg></h1>
+        <span class="fio-ouro rv" style="--d:.9s"></span>
         <p class="cargo rotulo rv" style="--d:.35s">${esc(p.role)}</p>
       </div>
     </section>
@@ -81,6 +87,7 @@
       <button class="save rv" type="button" data-vcard>${icon("download")}Salvar na agenda</button>
     </nav>
 
+    ${divisor()}
     ${fotos.length ? `
     <section class="colecao gutter" aria-labelledby="s-col">
       <span class="olho rotulo rv">Portfólio</span>
@@ -102,7 +109,8 @@
     </section>` : ""}
 
     <section class="ajuda gutter" aria-labelledby="s-ajuda">
-      <div class="envelope rv zoom">
+      <div class="envelope rv zoom" id="envelope">
+        <div class="aba-fechada" aria-hidden="true"></div>
         <div class="aba">${aba}</div>${fecho}
         <h2 id="s-ajuda">Como posso ajudar você?</h2>
         <ul>${intents.map((i, k) => `<li class="rv" style="--d:${.15 + k * .1}s"><a href="${esc(wa(i.msg))}" target="_blank" rel="noopener"><span>${esc(i.title)}<small>${esc(i.sub)}</small></span>${icon("arrow")}</a></li>`).join("")}</ul>
@@ -116,10 +124,12 @@
         <h2 class="rv" style="--d:.1s" id="s-sobre">${esc(first)}<br><em>${esc(resto.join(" "))}</em></h2>
         <span class="cargo2 rv" style="--d:.18s">${esc(p.role)} · ${esc(p.places.join(" e "))}</span>
         ${p.bio.map((t, k) => `<p class="rv" style="--d:${.25 + k * .1}s">${esc(t)}</p>`).join("")}
-        <a class="fale rv" style="--d:.45s" href="${esc(wa(p.whatsappMsg))}" target="_blank" rel="noopener">Fale comigo agora ${icon("arrow")}</a>
+        <span class="assinatura rv" style="--d:.4s" aria-hidden="true"><span>${esc(first)}</span></span>
+        <a class="fale rv" style="--d:.55s" href="${esc(wa(p.whatsappMsg))}" target="_blank" rel="noopener">Fale comigo agora ${icon("arrow")}</a>
       </div>
     </section>
 
+    ${divisor()}
     <footer class="gutter rv">
       <img class="foot-logo" src="${esc(p.logo)}" alt="Divino Couro" loading="lazy">
       <span class="assin">${esc(p.signature)}</span>
@@ -133,7 +143,9 @@
   main.className = "pagina";
   main.innerHTML = html;
   document.body.appendChild(main);
-  document.body.insertAdjacentHTML("beforeend", '<div class="toast" id="toast" role="status" aria-live="polite"></div>');
+  document.body.insertAdjacentHTML("beforeend", '<div class="toast" id="toast" role="status" aria-live="polite"></div>'
+    + `<div class="barra" id="barra" aria-hidden="true"></div>`
+    + `<a class="fab" id="fab" href="${esc(wa(p.whatsappMsg))}" target="_blank" rel="noopener" aria-label="Falar com a ${esc(first)} no WhatsApp">${icon("whatsapp")}</a>`);
 
   const toastEl = document.getElementById("toast");
   let tt;
@@ -198,12 +210,62 @@
 
   document.querySelectorAll("[data-replay]").forEach(b => b.addEventListener("click", () => { scrollTo({ top: 0 }); window.HMIntro && HMIntro.play() }));
 
+  // capa: o nome aparece assim que a abertura termina
+  const h1 = document.querySelector(".capa h1");
+
+  // profundidade nas fotos, barra de leitura e botão flutuante
+  const pxs = [...document.querySelectorAll(".px")], barra = document.getElementById("barra"), fab = document.getElementById("fab");
+  const contatos = document.querySelector(".contatos"), sobreFale = document.querySelector(".sobre .fale");
+  const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let tick = false;
+  function aoRolar() {
+    tick = false;
+    const vh = innerHeight, max = document.documentElement.scrollHeight - vh;
+    barra.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    if (!calmo) pxs.forEach(im => {
+      const r = im.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      im.style.translate = `0 ${((r.top + r.height / 2 - vh / 2) * -Number(im.dataset.px)).toFixed(1)}px`;
+    });
+    const passou = contatos.getBoundingClientRect().bottom < 0;
+    const fim = sobreFale && sobreFale.getBoundingClientRect().top < vh && sobreFale.getBoundingClientRect().bottom > 0;
+    fab.classList.toggle("on", passou && !fim);
+  }
+  addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(aoRolar) } }, { passive: true });
+  addEventListener("resize", aoRolar);
+  aoRolar();
+
+  // coleção: destaque na bolsa da vez e troca automática suave
+  if (car) {
+    const itens = [...car.children];
+    const marca = () => {
+      const c = car.getBoundingClientRect().left + 22;
+      let melhor = 0, dist = 1e9;
+      itens.forEach((it, k) => { const d = Math.abs(it.getBoundingClientRect().left - c); if (d < dist) { dist = d; melhor = k } });
+      itens.forEach((it, k) => it.classList.toggle("ativo", k === melhor));
+      return melhor;
+    };
+    car.addEventListener("scroll", () => requestAnimationFrame(marca), { passive: true });
+    marca();
+    let auto, parado = false;
+    const passo2 = () => itens[0].getBoundingClientRect().width + 12;
+    const rodar = () => { clearInterval(auto); if (calmo) return; auto = setInterval(() => {
+      if (parado || document.hidden) return;
+      const r = car.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+      const k = marca(), prox = k >= itens.length - 1 ? 0 : k + 1;
+      car.scrollTo({ left: prox * passo2(), behavior: "smooth" });
+    }, 3800) };
+    ["pointerdown", "touchstart", "wheel"].forEach(ev => car.addEventListener(ev, () => { parado = true; clearTimeout(car._t); car._t = setTimeout(() => parado = false, 7000) }, { passive: true }));
+    rodar();
+  }
+
   // botões em cascata e revelação conforme rola
   document.querySelectorAll(".links").forEach(g => g.querySelectorAll(".link").forEach((l, k) => l.style.setProperty("--d", `${k * .08}s`)));
   const els = [...document.querySelectorAll(".rv")];
   function observar() {
-    if (!("IntersectionObserver" in window)) { els.forEach(el => el.classList.add("in")); return }
-    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target) } }),
+    if (!("IntersectionObserver" in window)) { els.forEach(el => el.classList.add("in")); h1 && h1.classList.add("in"); document.getElementById("envelope")?.classList.add("aberto"); return }
+    h1 && h1.classList.add("in");
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); if (e.target.id === "envelope") setTimeout(() => e.target.classList.add("aberto"), 450); io.unobserve(e.target) } }),
       { rootMargin: "0px 0px -8% 0px", threshold: .1 });
     els.forEach(el => io.observe(el));
   }

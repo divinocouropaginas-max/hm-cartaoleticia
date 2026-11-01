@@ -187,3 +187,71 @@ html.rv-on .rv.in { opacity: 1; transform: none }
   html.rv-on .rv { opacity: 1; transform: none }
 }
 @media (max-width: 360px) { .quick a, .quick button { font-size: 10px } .faixa small { font-size: 10.5px } }
+
+/* =================== acabamento "incrível" =================== */
+/* capa: nome letra a letra, fio dourado e estrelinha */
+.capa h1 { position: relative; display: inline-block }
+.capa h1 .l { display: inline-block; opacity: 0; transform: translateY(.35em); filter: blur(8px);
+  transition: opacity .9s ease, transform 1s cubic-bezier(.2,.8,.2,1), filter .9s ease; transition-delay: var(--d) }
+.capa h1.in .l, html:not(.rv-on) .capa h1 .l { opacity: 1; transform: none; filter: none }
+.capa h1 .brilho { position: absolute; right: -.42em; top: -.08em; width: .34em; height: .34em; fill: var(--ouro-claro); opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(255,220,160,.8)) }
+.capa h1.in .brilho { animation: estrela 3.2s 1.6s ease-in-out infinite }
+@keyframes estrela { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0) } 18% { opacity: 1; transform: scale(1) rotate(45deg) } 40% { opacity: .9; transform: scale(.85) rotate(90deg) } 60% { opacity: 0; transform: scale(.3) rotate(120deg) } }
+.fio-ouro { display: block; width: 0; height: 1px; margin: 14px auto 0; background: linear-gradient(90deg, transparent, var(--ouro-claro), transparent); transition: width 1.4s cubic-bezier(.2,.8,.2,1) .9s }
+.fio-ouro.in { width: 150px }
+html.rv-on .fio-ouro.rv { transform: none }
+.capa > img.px { will-change: translate }
+
+/* divisor dourado com a estrelinha */
+.divisor { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 6px 22px; background: var(--branco) }
+.divisor i { height: 1px; flex: 0 1 110px; background: linear-gradient(90deg, transparent, var(--ouro)); transform: scaleX(0); transition: transform 1.2s cubic-bezier(.2,.8,.2,1) .2s }
+.divisor i:last-child { background: linear-gradient(270deg, transparent, var(--ouro)); }
+.divisor i:first-child { transform-origin: right } .divisor i:last-child { transform-origin: left }
+.divisor svg { width: 14px; height: 14px; fill: var(--ouro); transform: scale(0) rotate(-90deg); transition: transform .8s cubic-bezier(.3,1.6,.5,1) }
+.divisor.in i { transform: scaleX(1) }
+.divisor.in svg { transform: none }
+html.rv-on .divisor.rv { transform: none }
+
+/* coleção: bolsa da vez em destaque */
+.car-item { transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .6s, filter .6s; transform: scale(.94); opacity: .72; filter: saturate(.8) }
+.car-item.ativo { transform: none; opacity: 1; filter: none }
+.car-item .leg { transform: translateY(10px); opacity: 0; transition: transform .7s .15s, opacity .7s .15s }
+.car-item.ativo .leg { transform: none; opacity: 1 }
+
+/* envelope que se abre */
+.envelope { perspective: 900px; overflow: visible }
+.envelope .aba-fechada { position: absolute; left: 0; right: 0; top: 0; height: 120px; z-index: 3; transform-origin: top center;
+  clip-path: polygon(0 0, 100% 0, 50% 100%); background: linear-gradient(180deg, #e4d8c4, #d9cbb3);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.05); transition: transform 1.1s cubic-bezier(.6,0,.2,1), opacity .4s .9s;
+  backface-visibility: hidden }
+.envelope.aberto .aba-fechada { transform: rotateX(178deg); opacity: 0 }
+.envelope > svg { transition: opacity .5s; }
+.envelope:not(.aberto) > svg { opacity: 0 }
+.envelope h2, .envelope ul { transition: transform 1s cubic-bezier(.2,.8,.2,1) .5s, opacity .9s .5s }
+.envelope:not(.aberto) h2, .envelope:not(.aberto) ul { transform: translateY(26px); opacity: 0 }
+html:not(.rv-on) .envelope h2, html:not(.rv-on) .envelope ul { transform: none; opacity: 1 }
+
+/* sobre: profundidade e assinatura */
+.assinatura { display: block; font: 400 58px/1.1 var(--script); color: var(--ouro-claro); margin: 2px 0 -6px; text-shadow: 0 2px 16px rgba(0,0,0,.4) }
+.assinatura > span { display: inline-block; padding-right: .2em; clip-path: inset(0 100% 0 0); transition: clip-path 2.2s cubic-bezier(.5,0,.3,1) .5s }
+.assinatura.in > span { clip-path: inset(0 0 0 0) }
+html.rv-on .assinatura.rv { transform: none }
+
+/* barra de leitura e WhatsApp flutuante */
+.barra { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 60; transform-origin: left; transform: scaleX(0);
+  background: linear-gradient(90deg, #b8884a, #fff3d8, #c99a58); pointer-events: none }
+.fab { position: fixed; z-index: 60; right: max(18px, env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; color: #24160a;
+  background: linear-gradient(135deg, #c99a58, #fff3d8 45%, #d9b679 70%, #a5773d); box-shadow: 0 14px 30px -10px rgba(120,80,30,.7);
+  transform: translateY(120px) scale(.6); opacity: 0; transition: transform .5s cubic-bezier(.3,1.4,.5,1), opacity .3s }
+.fab svg.i { width: 26px; height: 26px }
+.fab.on { transform: none; opacity: 1 }
+.fab.on::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(201,163,104,.8); animation: onda 2.4s ease-out infinite }
+@keyframes onda { from { transform: scale(1); opacity: .9 } to { transform: scale(1.7); opacity: 0 } }
+@media (min-width: 520px) { .fab { right: calc(50% - 240px + 18px) } }
+
+@media (prefers-reduced-motion: reduce) {
+  .capa h1 .l, .envelope h2, .envelope ul { opacity: 1 !important; transform: none !important; filter: none !important }
+  .envelope .aba-fechada { display: none } .assinatura > span { clip-path: none }
+}
